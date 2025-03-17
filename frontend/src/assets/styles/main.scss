@@ -1,0 +1,220 @@
+@import './variables.scss';
+
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: $font-family;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: $font-size-base;
+  color: $text-primary;
+  background-color: $bg-light;
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+/* 通用样式 */
+.page-container {
+  padding: $content-padding;
+  position: relative;
+}
+
+.page-title {
+  margin-bottom: $spacing-large;
+  font-size: $font-size-extra-large;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+  position: relative;
+  padding-left: $spacing-medium;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(to bottom, $primary-gradient-start, $primary-gradient-end);
+    border-radius: $border-radius-small;
+  }
+}
+
+.section-title {
+  font-size: $font-size-large;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-medium;
+  color: $text-primary;
+}
+
+.search-bar {
+  margin-bottom: $spacing-large;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-medium;
+  background-color: white;
+  padding: $spacing-medium;
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-light;
+}
+
+.table-container {
+  margin-bottom: $spacing-large;
+  
+  .el-table {
+    @include table-style;
+  }
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: $spacing-large;
+}
+
+/* 表单样式 */
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: white;
+  padding: $spacing-large;
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-light;
+  
+  @include form-style;
+}
+
+/* 卡片样式 */
+.card-container {
+  @include card-style;
+  margin-bottom: $spacing-large;
+}
+
+.card-header {
+  padding: $spacing-medium $spacing-large;
+  border-bottom: 1px solid $border-lighter;
+  box-sizing: border-box;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+}
+
+.card-body {
+  padding: $spacing-large;
+}
+
+/* 按钮样式 */
+.el-button {
+  @include button-style;
+  
+  &--primary {
+    background: linear-gradient(135deg, $primary-gradient-start, $primary-gradient-end);
+    border: none;
+    
+    &:hover, &:focus {
+      background: linear-gradient(135deg, lighten($primary-gradient-start, 5%), lighten($primary-gradient-end, 5%));
+    }
+  }
+}
+
+/* 输入框样式 */
+.el-input {
+  .el-input__inner {
+    border-radius: $border-radius-base;
+    border-color: $border-light;
+    
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+    }
+  }
+}
+
+/* 下拉菜单样式 */
+.el-dropdown-menu {
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-base;
+}
+
+/* 弹窗样式 */
+.el-dialog {
+  border-radius: $border-radius-large;
+  overflow: hidden;
+  
+  .el-dialog__header {
+    background-color: $bg-base;
+    padding: $spacing-medium $spacing-large;
+    
+    .el-dialog__title {
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+    }
+  }
+  
+  .el-dialog__body {
+    padding: $spacing-large;
+  }
+  
+  .el-dialog__footer {
+    padding: $spacing-medium $spacing-large;
+    border-top: 1px solid $border-lighter;
+  }
+}
+
+/* 标签页样式 */
+.el-tabs {
+  .el-tabs__header {
+    margin-bottom: $spacing-large;
+  }
+  
+  .el-tabs__item {
+    font-size: $font-size-medium;
+    padding: 0 $spacing-large;
+    height: 40px;
+    line-height: 40px;
+    
+    &.is-active {
+      color: $primary-color;
+      font-weight: $font-weight-bold;
+    }
+  }
+  
+  .el-tabs__active-bar {
+    background-color: $primary-color;
+    height: 3px;
+    border-radius: $border-radius-small;
+  }
+}
+
+/* 响应式布局 */
+@media (max-width: $breakpoint-sm) {
+  .form-container {
+    max-width: 100%;
+    padding: $spacing-medium;
+  }
+  
+  .page-title {
+    font-size: $font-size-large;
+  }
+  
+  .section-title {
+    font-size: $font-size-medium;
+  }
+  
+  .card-header {
+    padding: $spacing-base $spacing-medium;
+  }
+  
+  .card-body {
+    padding: $spacing-medium;
+  }
+} 

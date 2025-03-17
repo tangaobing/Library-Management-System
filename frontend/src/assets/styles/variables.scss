@@ -1,0 +1,172 @@
+/* 品牌颜色 */
+$primary-color: #1a6fc9;
+$primary-gradient-start: #1a6fc9;
+$primary-gradient-end: #6e48aa;
+$primary-light: rgba(26, 111, 201, 0.1);
+$primary-lighter: rgba(26, 111, 201, 0.05);
+
+/* 文本颜色 */
+$text-primary: #303133;
+$text-regular: #606266;
+$text-secondary: #909399;
+$text-placeholder: #c0c4cc;
+$text-light: #ffffff;
+
+/* 边框颜色 */
+$border-base: #dcdfe6;
+$border-light: #e4e7ed;
+$border-lighter: #ebeef5;
+$border-extra-light: #f2f6fc;
+
+/* 背景颜色 */
+$bg-base: #f5f7fa;
+$bg-light: #f0f2f5;
+$bg-lighter: #fafafa;
+$bg-dark: #304156;
+$bg-darker: #263445;
+
+/* 功能色 */
+$success: #67c23a;
+$warning: #e6a23c;
+$danger: #f56c6c;
+$info: #909399;
+
+/* 字体 */
+$font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+$font-size-extra-large: 20px;
+$font-size-large: 18px;
+$font-size-medium: 16px;
+$font-size-base: 14px;
+$font-size-small: 13px;
+$font-size-extra-small: 12px;
+
+/* 字重 */
+$font-weight-bold: 700;
+$font-weight-medium: 500;
+$font-weight-regular: 400;
+$font-weight-light: 300;
+
+/* 圆角 */
+$border-radius-base: 4px;
+$border-radius-small: 2px;
+$border-radius-large: 8px;
+$border-radius-extra-large: 16px;
+$border-radius-circle: 50%;
+
+/* 阴影 */
+$box-shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+$box-shadow-base: 0 5px 15px rgba(0, 0, 0, 0.1);
+$box-shadow-dark: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+/* 间距 */
+$spacing-extra-small: 4px;
+$spacing-small: 8px;
+$spacing-base: 12px;
+$spacing-medium: 16px;
+$spacing-large: 20px;
+$spacing-extra-large: 24px;
+$spacing-extra-extra-large: 32px;
+
+/* 过渡 */
+$transition-base: all 0.3s ease;
+$transition-fast: all 0.2s ease;
+$transition-slow: all 0.5s ease;
+
+/* 布局 */
+$header-height: 60px;
+$sidebar-width: 220px;
+$sidebar-collapsed-width: 64px;
+$content-padding: 20px;
+
+/* 动画 */
+@mixin gradient-animation {
+  background-size: 200% 200%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 卡片样式 */
+@mixin card-style {
+  border-radius: $border-radius-large;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: $box-shadow-base;
+  transition: $transition-base;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $box-shadow-dark;
+  }
+}
+
+/* 按钮样式 */
+@mixin button-style {
+  border-radius: $border-radius-base;
+  padding: $spacing-small $spacing-medium;
+  transition: $transition-base;
+  font-weight: $font-weight-medium;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $box-shadow-light;
+  }
+}
+
+/* 表格样式 */
+@mixin table-style {
+  border-radius: $border-radius-base;
+  overflow: hidden;
+  box-shadow: $box-shadow-light;
+  
+  th {
+    background-color: rgba($primary-color, 0.15);
+    color: $text-primary;
+    font-weight: $font-weight-bold;
+    padding: $spacing-base 0;
+  }
+  
+  td {
+    padding: $spacing-base 0;
+  }
+  
+  tr:hover > td {
+    background-color: rgba($primary-color, 0.1);
+  }
+}
+
+/* 表单样式 */
+@mixin form-style {
+  .el-form-item__label {
+    font-weight: $font-weight-medium;
+    color: $text-regular;
+  }
+  
+  .el-input__inner {
+    border-radius: $border-radius-base;
+    border-color: $border-light;
+    
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+    }
+  }
+}
+
+/* 响应式断点 */
+$breakpoint-xs: 576px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 992px;
+$breakpoint-lg: 1200px;
+$breakpoint-xl: 1600px; 
