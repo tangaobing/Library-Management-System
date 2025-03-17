@@ -1,4 +1,5 @@
-@import './variables.scss';
+@use 'sass:color';
+@use './_variables' as *;
 
 /* 页面头部组件 */
 .page-header {

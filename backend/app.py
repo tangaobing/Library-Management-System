@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 # 移除JWT相关导入
 # from flask_jwt_extended import JWTManager
@@ -24,9 +24,21 @@ def create_app():
     # 加载配置
     app.config.from_object(config['development'])
     
-    # 配置CORS，允许跨域请求 - 使用最简单的配置解决跨域问题
-    # 允许所有来源的请求，支持凭证
-    CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+    # 配置CORS，允许跨域请求
+    CORS(app, 
+         origins=["http://localhost:5173"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         allow_headers=["Content-Type", "Authorization"],
+         expose_headers=["Content-Range", "X-Total-Count"],
+         supports_credentials=True,
+         max_age=3600)
+    
+    # 添加CORS预检请求的响应处理
+    @app.after_request
+    def after_request(response):
+        if request.method == 'OPTIONS':
+            response = app.make_default_options_response()
+        return response
     
     # 移除JWT配置
     # jwt = JWTManager(app)

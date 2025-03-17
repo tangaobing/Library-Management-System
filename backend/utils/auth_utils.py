@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import request, jsonify, g
 from models.user_model import User
+from routes.auth import verify_token
 
 def login_required(f):
     """
@@ -9,6 +10,10 @@ def login_required(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # 对OPTIONS请求直接返回成功
+        if request.method == 'OPTIONS':
+            return jsonify({'code': 200, 'message': 'OK'})
+            
         try:
             # 从请求头中获取令牌
             auth_header = request.headers.get('Authorization')
@@ -20,6 +25,14 @@ def login_required(f):
                 
             token = auth_header.split(' ')[1]
             
+            # 验证token
+            user_id = verify_token(token)
+            if not user_id:
+                return jsonify({
+                    'code': 401,
+                    'message': '认证令牌无效或已过期'
+                }), 401
+                
             # 这里简化处理，实际应用中应该从数据库验证令牌
             # 假设我们有一个用户ID为1的管理员用户
             current_user = User.query.get(1)

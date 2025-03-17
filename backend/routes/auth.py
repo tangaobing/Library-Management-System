@@ -1,35 +1,39 @@
 from flask import Blueprint, request, jsonify, current_app, session
 from models.user_model import User
 from models import db
-# 移除JWT相关导入
-# from flask_jwt_extended import (
-#     create_access_token,
-#     create_refresh_token,
-#     get_jwt_identity,
-#     jwt_required,
-#     get_jwt
-# )
-from datetime import timedelta
+from datetime import datetime, timedelta
 import logging
-import secrets  # 用于生成随机token
+import secrets
+import jwt
 
 auth = Blueprint('auth', __name__)
 
+# JWT密钥
+JWT_SECRET = 'your-secret-key'  # 在实际应用中应该使用环境变量
+
+def generate_token(user_id):
+    """生成JWT token"""
+    payload = {
+        'user_id': user_id,
+        'exp': datetime.utcnow() + timedelta(days=1)  # token有效期1天
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
+
+def verify_token(token):
+    """验证JWT token"""
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        return payload['user_id']
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
+
 @auth.route('/login', methods=['POST'])
 def login():
-    """
-    用户登录
-    
-    使用简单的会话认证替代JWT
-    """
+    """用户登录"""
     try:
         data = request.get_json()
-        if not data:
-            return jsonify({
-                'code': 400,
-                'message': '无效的请求数据'
-            }), 400
-            
         username = data.get('username')
         password = data.get('password')
         
@@ -41,55 +45,35 @@ def login():
             
         user = User.query.filter_by(username=username).first()
         
-        if user and user.check_password(password):
-            if user.status == 'locked':
-                return jsonify({
-                    'code': 403,
-                    'message': '账号已被锁定'
-                }), 403
-                
-            # 生成简单的访问令牌，不使用JWT
-            access_token = secrets.token_hex(32)
-            refresh_token = secrets.token_hex(32)
-            
-            # 更新最后登录时间
-            try:
-                user.update_last_login()
-                # 可以在这里存储token到数据库，此处简化处理
-                db.session.commit()
-            except Exception as e:
-                current_app.logger.error(f"更新登录时间失败: {str(e)}")
-                db.session.rollback()
-            
-            # 返回成功响应
-            return jsonify({
-                'code': 200,
-                'message': '登录成功',
-                'data': {
-                    'access_token': access_token,
-                    'refresh_token': refresh_token,
-                    'user': {
-                        'id': user.id,
-                        'username': user.username,
-                        'email': user.email,
-                        'avatar_url': user.avatar_url,
-                        'role': user.role,
-                        'status': user.status
-                    }
-                }
-            })
-        else:
+        if not user or not user.check_password(password):
             return jsonify({
                 'code': 401,
                 'message': '用户名或密码错误'
             }), 401
             
+        # 生成token
+        access_token = generate_token(user.id)
+            
+        return jsonify({
+            'code': 200,
+            'message': '登录成功',
+            'data': {
+                'access_token': access_token,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'avatar_url': user.avatar_url,
+                    'role': user.role,
+                    'status': user.status
+                }
+            }
+        })
     except Exception as e:
         current_app.logger.error(f"登录失败: {str(e)}")
-        db.session.rollback()
         return jsonify({
             'code': 500,
-            'message': f'服务器错误：{str(e)}'
+            'message': str(e)
         }), 500
 
 @auth.route('/register', methods=['POST'])
@@ -180,6 +164,55 @@ def refresh():
         
     except Exception as e:
         current_app.logger.error(f"刷新令牌失败: {str(e)}")
+        return jsonify({
+            'code': 500,
+            'message': str(e)
+        }), 500
+
+@auth.route('/me', methods=['GET'])
+def get_current_user():
+    """获取当前登录用户信息"""
+    try:
+        # 从请求头中获取token
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({
+                'code': 401,
+                'message': '未提供有效的认证令牌'
+            }), 401
+            
+        token = auth_header.split(' ')[1]
+        
+        # 验证token
+        user_id = verify_token(token)
+        if not user_id:
+            return jsonify({
+                'code': 401,
+                'message': '认证令牌无效或已过期'
+            }), 401
+            
+        # 获取用户信息
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({
+                'code': 404,
+                'message': '用户不存在'
+            }), 404
+            
+        return jsonify({
+            'code': 200,
+            'message': '获取成功',
+            'data': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'avatar_url': user.avatar_url,
+                'role': user.role,
+                'status': user.status
+            }
+        })
+    except Exception as e:
+        current_app.logger.error(f"获取当前用户信息失败: {str(e)}")
         return jsonify({
             'code': 500,
             'message': str(e)
